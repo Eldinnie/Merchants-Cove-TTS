@@ -1,0 +1,24 @@
+<Defaults>
+  <Image preserveAspect="true" onCLick="toggle_clicked"/>
+  <Image class="button" onMouseEnter="highlight_ui_button_on" onMouseExit="highlight_ui_button_off"/>
+</Defaults>
+
+<Panel id="ui_panel" Width="2836" Height="3382" image="menu_background" position="0 0 -51" rotation="0 0 180">
+  <VerticalLayout rectAlignment="MiddleLeft" offsetXY="290 140" Width="1000" Height="980" spacing="20">
+    <Image id="TOWNSFOLK_Locals" class="button" toggle="off" value="Locals" group="TOWNSFOLK" image="TOWNSFOLK_Locals_off"/>
+    <Image id="TOWNSFOLK_Mercenaries" class="button" toggle="off" value="Mercenaries" group="TOWNSFOLK" image="TOWNSFOLK_Mercenaries_off"/>
+    <Image id="TOWNSFOLK_Sailors" class="button" toggle="off" value="Sailors" group="TOWNSFOLK" image="TOWNSFOLK_Sailors_off"/>
+  </VerticalLayout>
+  <VerticalLayout rectAlignment="MiddleRight" offsetXY="-290 140" Width="1000" Height="980" spacing="20">
+    <Image id="ROGUE_Criminals" class="button" toggle="off" value="Criminals" group="ROGUE" image="ROGUE_Criminals_off"/>
+    <Image id="ROGUE_Cultists" class="button" toggle="off" value="Cultists" group="ROGUE" image="ROGUE_Cultists_off"/>
+    <Image id="ROGUE_Thieves" class="button" toggle="off" value="Thieves" group="ROGUE" image="ROGUE_Thieves_off"/>
+  </VerticalLayout>
+  <Image id="ROGUE_Random" class="button" toggle="off" value="Random" group="ROGUE" image="ROGUE_Random_off" Width="300" Height="168" rectAlignment="MiddleRight" offsetXY="-210 750"/>
+  <HorizontalLayout rectAlignment="LowerCenter" offsetXY="0 870" Width="2400" Height="280" spacing="70">
+    <Image id="NUM_PLAYERS_2" class="button" toggle="off" value="2" group="NUM_PLAYERS" image="NUM_PLAYERS_2_off"/>
+    <Image id="NUM_PLAYERS_3" class="button" toggle="off" value="3" group="NUM_PLAYERS" image="NUM_PLAYERS_3_off"/>
+    <Image id="NUM_PLAYERS_4" class="button" toggle="off" value="4" group="NUM_PLAYERS" image="NUM_PLAYERS_4_off"/>
+  </HorizontalLayout>
+  <Image id="start_game" toggle="off" rectAlignment="LowerCenter" Height="411" image="start_game_off" offsetXY="0 200" onClick=""/>
+</Panel>

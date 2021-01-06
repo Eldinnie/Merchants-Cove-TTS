@@ -1,0 +1,40 @@
+data = require("merchantscove.MerchantsV1")
+factionboards = {}
+
+available = {}
+for set, chars in pairs(data) do
+  for char, _ in pairs(chars) do
+    available[set..char] = true
+  end
+end
+
+function merchant_picked(setchar)
+  available[setchar] = false
+  update_all_buttons()
+end
+
+function im_here(par)
+    factionboards[#factionboards+1] = par
+end
+
+function im_gone(par)
+    local where = 0
+    for x=1, #factionboards do
+        if factionboards[x] == par then
+            where = x
+        end
+    end
+    table.remove(factionboards, where)
+end
+
+function update_all_buttons()
+    for _, x in ipairs(factionboards) do
+        x.call('update_buttons', {})
+    end
+end
+
+function onLoad(save_state)
+  utils = require("utils.utils")
+  addHotkey("snapit", utils.set_snaps_on_hovered_object_for_selected_objects)
+  addHotkey("getvectors", utils.print_selected_pos_and_rot_local_to_hovered)
+end

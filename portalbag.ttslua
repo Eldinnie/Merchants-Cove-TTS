@@ -1,0 +1,23 @@
+utils = require("utils.utils")
+POSITIONS = {
+  {position={-17.75, 0.07, 3.06}, rotation={0, -0.01, 0}},
+  {position={-13.62, 0.07, 3.06}, rotation={0, -0.01, 0}},
+  {position={-13.62, 0.07, -1.07}, rotation={0, -0.01, 0}},
+  {position={-17.75, 0.07, -1.07}, rotation={0, -0.01, 0}},
+  {position={-13.62, 0.07, -5.2}, rotation={0, -0.01, 0}},
+  {position={-17.75, 0.07, -5.2}, rotation={0, -0.01, 0}},
+  {position={-2.14, 0.22, 3.48}, rotation={0, -0.02, 180}},
+  {position={2.03, 0.22, 3.48}, rotation={0, 0, 180}},
+}
+
+function place_portals()
+  self.shuffle()
+  local board = utils.find_object_by_gm_note("Chronomancer Board")
+  local board_rotation = board.getRotation()
+  for _, pos in ipairs(POSITIONS) do
+    pos.position = board.positionToWorld(pos.position)
+    pos.rotation = Vector(pos.rotation) + board_rotation
+    self.takeObject(pos)
+  end
+  self.destruct()
+end

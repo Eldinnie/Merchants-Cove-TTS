@@ -1,0 +1,347 @@
+utils = require("utils.utils")
+POSITIONS = require("merchantscove.positions")
+ROGUES = require("merchantscove.rogues")
+TOWNSFOLK = {
+  Locals = false,
+  Mercenaries = false,
+  Sailors = false
+}
+NUM_PLAYERS = {
+  ["2"] = false,
+  ["3"] = false,
+  ["4"] = false,
+}
+ROGUE = {
+  Thieves = false,
+  Criminals = false,
+  Cultists = false,
+  Random = false,
+}
+LOADED = false
+
+setup_routine = coroutine.create(function()
+  self.UI.setAttribute("ui_panel", "active", "False")
+  setup_rogue()
+  Wait.time(setup, 0.5)
+  coroutine.yield()
+  setup_corruption()
+  Wait.time(setup, 0.5)
+  coroutine.yield()
+  setup_townsfolk()
+  Wait.time(setup, 0.5)
+  coroutine.yield()
+  setup_clock()
+  Wait.time(setup, 0.5)
+  coroutine.yield()
+  arrival_phase()
+  LOADED = true
+end)
+
+function setup()
+  coroutine.resume(setup_routine)
+end
+
+function setup_rogue()
+  local deck = utils.find_object_by_gm_note("Rogue Deck")
+  local index = nil
+  if ROGUE.Random then
+    local tmp = {}
+    for r, _ in pairs(ROGUE) do
+      if r ~= "Random" then
+        table.insert(tmp, r)
+      end
+    end
+    ROGUE[tmp[math.random(1, #tmp)]] = true
+    ROGUE.random = false
+  end
+  for _, card in ipairs(deck.getObjects()) do
+    if ROGUE[card.gm_notes:sub(9)] then
+      SELECTED_ROGUE = card.gm_notes:sub(9)
+      index = card.index
+    end
+  end
+  if index == nil then return end
+  local params = {
+    index=index,
+    position = self.positionToWorld(POSITIONS.rogue_card.position)+Vector(1),
+    rotation = self.getRotation()+Vector(POSITIONS.rogue_card.rotation),
+    callback_function = function(o) o.setLock(true) end,
+  }
+  local card = deck.takeObject(params)
+  Wait.time(setup, 1)
+  coroutine.yield()
+  local bag = utils.find_object_by_gm_note("Rogues")
+  local adventurers = utils.find_object_by_gm_note("Adventurers")
+  for x=1, ROGUES[SELECTED_ROGUE].lair do
+    params = {
+      position = self.positionToWorld(POSITIONS.rogue_lair[x].position),
+      rotation = self.getRotation()+Vector(POSITIONS.rogue_lair[x].rotation),
+    }
+    bag.takeObject(params)
+    Wait.time(setup, 0.5)
+    coroutine.yield()
+  end
+  for x=1, ROGUES[SELECTED_ROGUE].bag do
+    adventurers.putObject(bag.takeObject())
+    Wait.time(setup, 0.5)
+    coroutine.yield()
+  end
+  local box = utils.find_object_by_gm_note("The Box")
+  bag.setLock(false)
+  box.putObject(bag)
+  box.putObject(deck)
+end
+
+function setup_corruption()
+  local deck = utils.find_object_by_gm_note("Corruption Deck")
+  deck.shuffle()
+end
+
+function setup_townsfolk()
+  local box = utils.find_object_by_gm_note("The Box")
+  for set, val in pairs(TOWNSFOLK) do
+    deck = utils.find_object_by_gm_note("Townsfolk - "..set)
+    if val then
+      deck.setPositionSmooth(self.positionToWorld(POSITIONS.townsfolk_deck.position)+Vector(0, 2, 0))
+      deck.setRotationSmooth(self.getRotation()+Vector(POSITIONS.townsfolk_deck.rotation))
+      Wait.time(setup, 0.5)
+      coroutine.yield()
+    else
+      box.putObject(deck)
+    end
+  end
+  Wait.time(setup, 3)
+  coroutine.yield()
+  local deck = Physics.cast({
+    origin       = self.positionToWorld(POSITIONS.townsfolk_deck.position)-Vector(0, 0.2, 0),
+    direction    = {0, 1, 0},
+    type         = 1,
+    max_distance = 1,
+    debug        = true,
+  })[1].hit_object
+  deck.shuffle()
+  Wait.time(setup, 0.2)
+  coroutine.yield()
+  for x=1, 4 do
+    params = {
+      position = self.positionToWorld(POSITIONS.townsfolk_cards[x].position),
+      rotation = self.getRotation() + Vector(POSITIONS.townsfolk_cards[x].rotation),
+    }
+    deck.takeObject(params)
+    Wait.time(setup, 0.2)
+    coroutine.yield()
+  end
+end
+
+function setup_clock()
+  local tokens = utils.find_objects_by_gm_note({"DSAT"})
+  local PLAYERS = 0
+  for num, val in pairs(NUM_PLAYERS) do
+    if val then PLAYERS = tonumber(num) end
+  end
+  for _, pos in ipairs(POSITIONS.clock_tokens[PLAYERS]) do
+    local token = table.remove(tokens)
+    token.setPositionSmooth(self.positionToWorld(pos.position)+Vector(0, 1, 0))
+    token.setRotationSmooth(self.getRotation()+Vector(pos.rotation))
+    Wait.time(setup, 0.3)
+    coroutine.yield()
+  end
+  local box = utils.find_object_by_gm_note("The Box")
+  for _, token in ipairs(tokens) do
+    box.putObject(token)
+    Wait.time(setup, 0.3)
+    coroutine.yield()
+  end
+end
+
+function clean_up()
+  function co()
+    local bag = utils.find_object_by_gm_note("Adventurers")
+    local box = utils.find_object_by_gm_note("The Box")
+    -- return adventurers to bags.
+    local to_return = {GB=true, YN=true, BW=true, RW=true, Rogue=true}
+    local objs = Physics.cast({
+      origin       = self.positionToWorld(POSITIONS.cleanup_cast_origin),
+      direction    = {1, 0, 0},
+      type         = 3,
+      size         = {0.1, 1, 18},
+      orientation  = {0, 0, 0},
+      max_distance = 40,
+      debug        = false,
+    })
+    for _, obj in ipairs(objs) do
+      if to_return[obj.hit_object.getGMNotes()] then
+        bag.putObject(obj.hit_object)
+        utils.wait_time(0.05)
+      end
+    end
+    -- discard rightmost townsfolk. move others right and draw new_pos
+    local cards = {}
+    for x, pos in ipairs(POSITIONS.townsfolk_cards) do
+      local found = Physics.cast({
+        origin       = self.positionToWorld(pos.position)-Vector(0, 0.2, 0),
+        direction    = {0, 1, 0},
+        type         = 1,
+        max_distance = 1,
+        debug        = true,
+      })
+      if #found >0 then
+        cards[x] = found[1].hit_object
+      else
+        return 1
+      end
+    end
+    for x=1, 3 do
+      cards[x].setPositionSmooth(cards[x+1].getPosition()+Vector(0, 1, 0))
+    end
+    box.putObject(cards[4])
+    local deck = Physics.cast({
+      origin       = self.positionToWorld(POSITIONS.townsfolk_deck.position)-Vector(0, 0.2, 0),
+      direction    = {0, 1, 0},
+      type         = 1,
+      max_distance = 1,
+      debug        = true,
+    })[1].hit_object
+    deck.takeObject({
+      position = self.positionToWorld(POSITIONS.townsfolk_cards[1].position)+Vector(0, 1, 0),
+      rotation = self.getRotation()+Vector(POSITIONS.townsfolk_cards[1].rotation)
+    })
+    return 1
+  end
+  startLuaCoroutine(self, "co")
+end
+
+function arrival_phase()
+  function co()
+    local boats = utils.find_objects_by_gm_note({"Boat2"})
+    boats = utils.shuffle_table(boats)
+    local rogues = false
+    local rogue_card_name = find_rogue()
+    if rogue_card_name ~= nil then
+      local rogues = ROGUES[rogue_card_name].arrival
+    end
+    for x, pos in ipairs(POSITIONS.boats) do
+      boats[x].setPositionSmooth(self.positionToWorld(pos.position))
+      boats[x].setRotationSmooth(self.getRotation() + Vector(pos.rotation))
+    end
+    utils.wait_time(1)
+    local bag = utils.find_object_by_gm_note("Adventurers")
+    bag.shuffle()
+    for _, boat in ipairs(boats) do
+      for _, seat in ipairs(POSITIONS.boat_seat[boat.getGMNotes()]) do
+        local params = {}
+        params.position = boat.positionToWorld(seat.position)+Vector(0, 0.5, 0)
+        params.rotation = boat.getRotation() + Vector(seat.rotation)
+        params.index=0
+        if rogues == false then
+          while bag.getObjects()[1].gm_notes == "Rogue" do
+            bag.shuffle()
+          end
+        end
+        bag.takeObject(params)
+        utils.wait_time(0.05)
+      end
+    end
+    return 1
+  end
+  startLuaCoroutine(self, "co")
+end
+
+function next_round()
+  function co()
+    clean_up()
+    utils.wait_time(2)
+    arrival_phase()
+    return 1
+  end
+  startLuaCoroutine(self, "co")
+end
+
+function find_rogue()
+  local position = self.positionToWorld(POSITIONS.rogue_card.position)-Vector(0, 0.2, 0)
+  local found = Physics.cast({
+    origin       = position,
+    direction    = {0, 1, 0},
+    type         = 1,
+    max_distance = 1,
+    debug        = false,
+  })
+  return #found>0 and found[1].hit_object.getName() or nil
+end
+
+function highlight_ui_button_on(player, value, id)
+  local attrs = self.UI.getAttributes(id)
+  if attrs.toggle == "off" then
+    attrs.image = string.gsub(attrs.image, "off", "on")
+  end
+  attrs.color="rgba(0.8,0.8,0.8,0.8)"
+  self.UI.setAttributes(id, attrs)
+end
+
+function highlight_ui_button_off(player, value, id)
+  local attrs = self.UI.getAttributes(id)
+  if attrs.toggle == "off" then
+    attrs.image = string.gsub(attrs.image, "on", "off")
+  end
+  attrs.color="rgba(1,1,1,1)"
+  self.UI.setAttributes(id, attrs)
+end
+
+function toggle_clicked(player, value, id)
+  if value ~= "-1" then return end
+  local attrs = self.UI.getAttributes(id)
+  attrs.image = attrs.image:gsub("off", "on")
+  if attrs.group ~= "TOWNSFOLK" then
+    _G[attrs.group][attrs.value] = true
+    attrs.toggle = "on"
+    for key, _ in pairs(_G[attrs.group]) do
+      if key ~= attrs.value then
+        self.UI.setAttributes(attrs.group.."_"..key, {toggle="off", image=attrs.group.."_"..key.."_off"})
+      end
+    end
+  else
+    _G[attrs.group][attrs.value] = not _G[attrs.group][attrs.value]
+    attrs.toggle = _G[attrs.group][attrs.value] and "on" or "off"
+    attrs.image = id.."_"..attrs.toggle
+  end
+  self.UI.setAttributes(id, attrs)
+  validate_setup()
+end
+
+function validate_setup()
+  local tables_to_check ={
+    TOWNSFOLK = 2,
+    ROGUE = 1,
+    NUM_PLAYERS = 1,
+  }
+  local valid = true
+  for set, minimum in pairs(tables_to_check) do
+    local tmp = 0
+    for _, v in pairs(_G[set]) do
+      if v then tmp = tmp + 1 end
+    end
+    if tmp < minimum then
+      valid = false
+      break
+    end
+  end
+  if valid then
+    self.UI.setAttributes("start_game", {image="start_game_on", onClick="setup"})
+  else
+    self.UI.setAttributes("start_game", {image="start_game_off", onClick=""})
+  end
+end
+
+function onLoad(save_state)
+  if save_state ~= "" then
+    LOADED = JSON.decode(save_state).LOADED
+  end
+  if LOADED then
+    self.UI.setAttribute("ui_panel", "active", "False")
+  end
+  addHotkey("Next Round", next_round)
+end
+
+function onSave()
+  return JSON.encode({LOADED=LOADED})
+end

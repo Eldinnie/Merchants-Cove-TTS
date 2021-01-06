@@ -1,0 +1,19 @@
+local rogues = {
+  Cultists = {
+    arrival = true,
+    bag = 4,
+    lair = 3.
+  },
+  Thieves = {
+    arrival = false,
+    bag = 4,
+    lair = 3.
+  },
+  Criminals = {
+    arrival = true,
+    bag = 4,
+    lair = 2.
+  },
+}
+
+return rogues

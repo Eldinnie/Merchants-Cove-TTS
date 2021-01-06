@@ -1,0 +1,83 @@
+data = require("merchantscove.MerchantsV1")
+utils = require("utils.utils")
+
+characters = {}
+for set, chars in pairs(data) do
+  for char, _ in pairs(chars) do
+    if char ~= "Peddler" then
+      table.insert(characters, {set, char})
+    end
+  end
+end
+
+function delete_me(_, value)
+  if value == "-1" then
+    Global.call('im_gone', self)
+    self.destruct()
+  end
+end
+
+function select_char(player, value, id)
+  if value ~= "-1" then return end
+  if player.color == "Grey" then
+      broadcastToColor("Sit down first", player.color, "Red")
+      return
+  end
+  local avail = Global.getTable('available')
+  if id ~= "Random" then
+    set = self.UI.getAttribute(id, "set")
+    if avail[set..id] then
+      spawn_here(data[set][id].data)
+      Global.call('merchant_picked', set..id)
+    end
+  else
+    local picked = nil
+    while picked == nil do
+      characters = utils.shuffle_table(characters)
+      picked = table.remove(characters)
+      if picked==nil then
+        break
+      end
+      if not avail[picked[1]..picked[2]] then
+        picked = nil
+      end
+    end
+    if picked ~= nil then
+      spawn_here(data[picked[1]][picked[2]].data)
+      Global.call('merchant_picked', picked[1]..picked[2])
+    end
+  end
+end
+
+function spawn_here(to_spawn)
+    local my_rot = self.getRotation()
+    local scale = self.getScale()
+
+    scale.x = 1/scale.x
+    scale.z = 1/scale.z
+    scale.y = 1/scale.y
+
+    for _,v in ipairs(to_spawn) do
+        local new_pos = self.positionToWorld(Vector(v.move_to) * scale)
+        new_pos.y = new_pos.y-0.13
+        spawnObjectJSON({
+            json              = v.json,
+            position          = new_pos,
+            callback_function = function(o) o.setRotation({o.getRotation().x, o.getRotation().y+my_rot.y, o.getRotation().z}) end
+        })
+    end
+    Global.call('im_gone', self)
+    self.destruct()
+end
+
+function update_buttons()
+  available = Global.getTable("available")
+  for entry, value in pairs(available) do
+    self.UI.setAttribute(entry:sub(5), "active", value)
+  end
+end
+
+function onLoad(save_state)
+  Global.call('im_here', self)
+  update_buttons()
+end

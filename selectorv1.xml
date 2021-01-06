@@ -1,0 +1,19 @@
+<Defaults>
+  <Image preserveAspect="True" onClick="select_char"/>
+</Defaults>
+
+<Panel image="Background" Width="2153" Height="1695" position="0 0 -200" rotation="0 0 180" >
+  <GridLayout cellSize="644 589" constraint="FixedColumnCount" constraintCount="2" rectAlignment="UpperLeft" offsetXY="0 -400">
+      <Image id="Alchemist" set="Base" image="Alchemist" />
+    <Image id="Blacksmith" set="Base" image="Blacksmith" />
+    <Image id="Captain" set="Base" image="Captain" />
+    <Image id="Chronomancer" set="Base" image="Chronomancer" />
+  </GridLayout>
+  <Button colors="Red|Red|Red|Red" rectAlignment="UpperRight" offsetXY="-100 -100" width="100" Height="100" onCLick="delete_me">
+    <Text color="White" resizeTextForBestFit="True" resizeTextMaxSize="800">X</Text>
+  </Button>
+  <GridLayout cellSize="644 589" constraint="FixedColumnCount" constraintCount="1" rectAlignment="UpperRight" offsetXY="-60 -400" Width="30%">
+    <Image id="Random" image="Random" Height="400" offsetXY="-80 0"/>
+    <Image id="Peddler" set="Base" image="Peddler" Height="280" offsetXY="-40 100"/>
+  </GridLayout>
+</Panel>
