@@ -44,7 +44,6 @@ function update_merchant_data()
   function transfer()
       TMP = utils.find_object_by_gm_note("TMP")
       data = TMP.getTable("EVERYTHING")
-      print(logString(data))
       log("Newest data received")
       TMP.destruct()
       for set, chars in pairs(data) do

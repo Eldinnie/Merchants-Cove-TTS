@@ -18,6 +18,8 @@ ROGUE = {
   Random = false,
 }
 LOADED = false
+CLEAN_UP_GAURD = false
+
 
 setup_routine = coroutine.create(function()
   self.UI.setAttribute("ui_panel", "active", "False")
@@ -267,6 +269,19 @@ function find_rogue()
     debug        = false,
   })
   return #found>0 and found[1].hit_object.getName() or nil
+end
+
+function clean_up_click(player, value, id)
+  if value ~= "-1" then return end
+  if CLEAN_UP_GAURD then
+    CLEAN_UP_GAURD = false
+    next_round()
+    broadcastToAll("Performing cleanup and arrival phase")
+  else
+    broadcastToAll("Click again within 2 seconds to do a cleanup and arrival for the next round")
+    CLEAN_UP_GAURD = true
+    Wait.time(function() CLEAN_UP_GAURD=false end, 2)
+  end
 end
 
 function highlight_ui_button_on(player, value, id)
