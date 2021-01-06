@@ -1,11 +1,15 @@
-data = require("merchantscove.MerchantsV1")
 utils = require("utils.utils")
-
+data = {}
 characters = {}
-for set, chars in pairs(data) do
-  for char, _ in pairs(chars) do
-    if char ~= "Peddler" then
-      table.insert(characters, {set, char})
+
+
+function update_data()
+  data = Global.getTable("data")
+  for set, chars in pairs(data) do
+    for char, _ in pairs(chars) do
+      if char ~= "Peddler" then
+        table.insert(characters, {set, char})
+      end
     end
   end
 end

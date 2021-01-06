@@ -1,12 +1,6 @@
-data = require("merchantscove.MerchantsV1")
+utils = require("utils.utils")
 factionboards = {}
-
 available = {}
-for set, chars in pairs(data) do
-  for char, _ in pairs(chars) do
-    available[set..char] = true
-  end
-end
 
 function merchant_picked(setchar)
   available[setchar] = false
@@ -14,7 +8,7 @@ function merchant_picked(setchar)
 end
 
 function im_here(par)
-    factionboards[#factionboards+1] = par
+  factionboards[#factionboards+1] = par
 end
 
 function im_gone(par)
@@ -33,8 +27,51 @@ function update_all_buttons()
     end
 end
 
+function update_all_data()
+  log("Updating all "..#factionboards.." selectors")
+  for _, x in ipairs(factionboards) do
+      x.call('update_data')
+  end
+end
+
 function onLoad(save_state)
-  utils = require("utils.utils")
-  addHotkey("snapit", utils.set_snaps_on_hovered_object_for_selected_objects)
-  addHotkey("getvectors", utils.print_selected_pos_and_rot_local_to_hovered)
+  update_merchant_data()
+end
+
+
+function update_merchant_data()
+  TEXT = ""
+  function transfer()
+      TMP = utils.find_object_by_gm_note("TMP")
+      data = TMP.getTable("EVERYTHING")
+      print(logString(data))
+      log("Newest data received")
+      TMP.destruct()
+      for set, chars in pairs(data) do
+        for char, _ in pairs(chars) do
+          available[set..char] = true
+        end
+      end
+      Wait.time(update_all_data, 0.1)
+  end
+
+  function spawned(o)
+      o.setLock(true)
+      o.setLuaScript(TEXT)
+      o.setGMNotes("TMP")
+      o.reload()
+      Wait.condition(transfer,||not o.spawning)
+  end
+
+  function callback(wr)
+    if wr.is_error then
+      log("Something went wrong retreiving newest data")
+      log(wr.error)
+    else
+      log("Faction Data received.")
+      TEXT = wr.text
+      local TMP = spawnObject({type='backgammon_piece_white', position={5.00, -24.22, 0.00}, sound=false, callback_function=spawned})
+    end
+  end
+  WebRequest.get("https://raw.githubusercontent.com/Eldinnie/Merchants-Cove-TTS/main/MerchantsV1.ttslua", callback)
 end

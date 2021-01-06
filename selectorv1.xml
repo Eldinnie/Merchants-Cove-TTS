@@ -3,7 +3,7 @@
 </Defaults>
 
 <Panel image="Background" Width="2153" Height="1695" position="0 0 -200" rotation="0 0 180" >
-  <GridLayout cellSize="644 589" constraint="FixedColumnCount" constraintCount="2" rectAlignment="UpperLeft" offsetXY="0 -400">
+  <GridLayout cellSize="644 589" constraint="FixedColumnCount" constraintCount="2" rectAlignment="UpperLeft" offsetXY="60 -400">
       <Image id="Alchemist" set="Base" image="Alchemist" />
     <Image id="Blacksmith" set="Base" image="Blacksmith" />
     <Image id="Captain" set="Base" image="Captain" />
