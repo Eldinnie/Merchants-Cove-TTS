@@ -2,8 +2,8 @@ utils = require("utils.utils")
 POSITIONS = require("merchantscove.positions")
 ROGUES = require("merchantscove.rogues")
 TOWNSFOLK = {
-  Locals = false,
-  Mercenaries = false,
+  Locals = true,
+  Mercenaries = true,
   Sailors = false
 }
 NUM_PLAYERS = {
@@ -13,7 +13,7 @@ NUM_PLAYERS = {
 }
 ROGUE = {
   Thieves = false,
-  Criminals = false,
+  Criminals = true,
   Cultists = false,
   Random = false,
 }

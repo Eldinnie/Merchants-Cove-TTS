@@ -5,12 +5,12 @@
 
 <Panel id="ui_panel" Width="2836" Height="3382" image="menu_background" position="0 0 -51" rotation="0 0 180">
   <VerticalLayout rectAlignment="MiddleLeft" offsetXY="290 140" Width="1000" Height="980" spacing="20">
-    <Image id="TOWNSFOLK_Locals" class="button" toggle="off" value="Locals" group="TOWNSFOLK" image="TOWNSFOLK_Locals_off"/>
-    <Image id="TOWNSFOLK_Mercenaries" class="button" toggle="off" value="Mercenaries" group="TOWNSFOLK" image="TOWNSFOLK_Mercenaries_off"/>
+    <Image id="TOWNSFOLK_Locals" class="button" toggle="on" value="Locals" group="TOWNSFOLK" image="TOWNSFOLK_Locals_on"/>
+    <Image id="TOWNSFOLK_Mercenaries" class="button" toggle="on" value="Mercenaries" group="TOWNSFOLK" image="TOWNSFOLK_Mercenaries_on"/>
     <Image id="TOWNSFOLK_Sailors" class="button" toggle="off" value="Sailors" group="TOWNSFOLK" image="TOWNSFOLK_Sailors_off"/>
   </VerticalLayout>
   <VerticalLayout rectAlignment="MiddleRight" offsetXY="-290 140" Width="1000" Height="980" spacing="20">
-    <Image id="ROGUE_Criminals" class="button" toggle="off" value="Criminals" group="ROGUE" image="ROGUE_Criminals_off"/>
+    <Image id="ROGUE_Criminals" class="button" toggle="on" value="Criminals" group="ROGUE" image="ROGUE_Criminals_on"/>
     <Image id="ROGUE_Cultists" class="button" toggle="off" value="Cultists" group="ROGUE" image="ROGUE_Cultists_off"/>
     <Image id="ROGUE_Thieves" class="button" toggle="off" value="Thieves" group="ROGUE" image="ROGUE_Thieves_off"/>
   </VerticalLayout>
