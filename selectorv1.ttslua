@@ -54,30 +54,34 @@ function select_char(player, value, id)
 end
 
 function spawn_here(to_spawn)
-    local my_rot = self.getRotation()
-    local scale = self.getScale()
+    Wait.time(function()
+      local my_rot = self.getRotation()
+      local scale = self.getScale()
 
-    scale.x = 1/scale.x
-    scale.z = 1/scale.z
-    scale.y = 1/scale.y
+      scale.x = 1/scale.x
+      scale.z = 1/scale.z
+      scale.y = 1/scale.y
 
-    for _,v in ipairs(to_spawn) do
-        local new_pos = self.positionToWorld(Vector(v.move_to) * scale)
-        new_pos.y = new_pos.y-0.13
-        spawnObjectJSON({
-            json              = v.json,
-            position          = new_pos,
-            callback_function = function(o) o.setRotation({o.getRotation().x, o.getRotation().y+my_rot.y, o.getRotation().z}) end
-        })
-    end
+      for _,v in ipairs(to_spawn) do
+          local new_pos = self.positionToWorld(Vector(v.move_to) * scale)
+          new_pos.y = new_pos.y-0.13
+          spawnObjectJSON({
+              json              = v.json,
+              position          = new_pos,
+              callback_function = function(o) o.setRotation({o.getRotation().x, o.getRotation().y+my_rot.y, o.getRotation().z}) end
+          })
+      end
+    end, 1.75)
     Global.call('im_gone', self)
-    self.destruct()
+    self.UI.hide("panel")
 end
 
 function update_buttons()
   available = Global.getTable("available")
   for entry, value in pairs(available) do
-    self.UI.setAttribute(entry:sub(5), "active", value)
+    if value == false then
+      self.UI.hide(entry:sub(5))
+    end
   end
 end
 

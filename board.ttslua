@@ -22,7 +22,9 @@ CLEAN_UP_GAURD = false
 
 
 setup_routine = coroutine.create(function()
-  self.UI.setAttribute("ui_panel", "active", "False")
+  self.UI.hide("ui_panel")
+  Wait.time(setup, 0.8)
+  coroutine.yield()
   setup_rogue()
   Wait.time(setup, 0.5)
   coroutine.yield()

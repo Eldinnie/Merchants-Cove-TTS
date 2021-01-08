@@ -4,11 +4,11 @@
   <Image class="button" onMouseEnter="highlight_ui_button_on" onMouseExit="highlight_ui_button_off"/>
 </Defaults>
 
-<Image id="clean_up1" class="clean_up" image="clean_up" position="20 1120 -60" Height="200" active="True" rotation="0 0 180"/>
-<Image id="clean_up2" class="clean_up" image="clean_up" position="-400 2760 -60" Width="140" active="True" rotation="0 0 180"/>
-<Image id="clean_up3" class="clean_up" image="clean_up" position="20 -500 -60" Height="200" active="True" rotation="0 0 180"/>
+<Image id="clean_up1" class="clean_up" image="clean_up" position="20 1120 -60" Height="200" Width="200" active="True" rotation="0 0 180"/>
+<Image id="clean_up2" class="clean_up" image="clean_up" position="-400 2760 -60" Width="140" Height="250" active="True" rotation="0 0 180"/>
+<Image id="clean_up3" class="clean_up" image="clean_up" position="20 -500 -60" Height="200" Width="200" active="True" rotation="0 0 180"/>
 
-<Panel active="True" id="ui_panel" Width="2836" Height="3382" image="menu_background" position="0 0 -51" rotation="0 0 180">
+<Panel active="True" id="ui_panel" Width="2836" Height="3382" image="menu_background" position="0 0 -51" rotation="0 0 180" hideAnimation="Shrink" animationDuration="1">
   <VerticalLayout rectAlignment="MiddleLeft" offsetXY="290 140" Width="1000" Height="980" spacing="20">
     <Image id="TOWNSFOLK_Locals" class="button" toggle="on" value="Locals" group="TOWNSFOLK" image="TOWNSFOLK_Locals_on"/>
     <Image id="TOWNSFOLK_Mercenaries" class="button" toggle="on" value="Mercenaries" group="TOWNSFOLK" image="TOWNSFOLK_Mercenaries_on"/>
