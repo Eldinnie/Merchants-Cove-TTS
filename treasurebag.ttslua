@@ -3,7 +3,7 @@ POSITIONS = {
   {position={-7.24, 0.29, 8}, rotation={0, 208.06, 180}},
   {position={7.15, 0.28, 7.89}, rotation={0, -32.26, 180}},
   {position={7.43, 0.28, 0.51}, rotation={0, 17.27, 180}},
-  {position={-7.66, 0.28, 1.01}, rotation={0, -24.22, 180}},
+  {position={-7.64, 0.36, 1.02}, rotation={0, -204.23, 180}},
 }
 
 function place_treasures()
