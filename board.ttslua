@@ -39,6 +39,8 @@ setup_routine = coroutine.create(function()
   coroutine.yield()
   arrival_phase()
   LOADED = true
+  local box = utils.find_object_by_gm_note("The Box")
+  box.call("start_tracker")
 end)
 
 function setup()
@@ -314,6 +316,7 @@ function toggle_clicked(player, value, id)
     for key, _ in pairs(_G[attrs.group]) do
       if key ~= attrs.value then
         self.UI.setAttributes(attrs.group.."_"..key, {toggle="off", image=attrs.group.."_"..key.."_off"})
+        _G[attrs.group][key] = false
       end
     end
   else
@@ -356,7 +359,6 @@ function onLoad(save_state)
   if LOADED then
     self.UI.setAttribute("ui_panel", "active", "False")
   end
-  addHotkey("Next Round", next_round)
 end
 
 function onSave()
